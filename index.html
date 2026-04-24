@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>se4n-d0m1n1c :: portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Share+Tech+Mono&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* =====================================================
+           THEME: CRT TERMINAL / OSCILLOSCOPE
+           Retro-tech industrial. Dark background, amber glow,
+           scanlines, monospace everything. Feels like an old
+           Tektronix scope or a DEC terminal brought to life.
+           ===================================================== */
+
+        :root {
+            --crt-bg:       #0f1117;
+            --crt-bg2:      #13161e;
+            --crt-text:     #e2dcc0;
+            --crt-dim:      #7a7a6e;
+            --crt-amber:    #ffb347;
+            --crt-amber-dim:#cc8822;
+            --crt-green:    #9fef9f;
+            --crt-green-dim:#5a9e5a;
+            --crt-line:     #2a2d35;
+            --crt-line-brt: #3d4048;
+            --crt-glow:     rgba(255, 179, 71, 0.08);
+            --crt-glow-str: rgba(255, 179, 71, 0.20);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'JetBrains Mono', 'Share Tech Mono', 'Space Mono', monospace;
+            background: var(--crt-bg);
+            color: var(--crt-text);
+            line-height: 1.7;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ---- CRT SCANLINES OVERLAY ---- */
+        .crt-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            pointer-events: none;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0,0,0,0.12) 0px,
+                rgba(0,0,0,0.12) 1px,
+                transparent 1px,
+                transparent 3px
+            );
+        }
+
+        /* ---- CRT VIGNETTE ---- */
+        .crt-vignette {
+            position: fixed;
+            inset: 0;
+            z-index: 9998;
+            pointer-events: none;
+            background: radial-gradient(
+                ellipse at center,
+                transparent 50%,
+                rgba(0,0,0,0.55) 100%
+            );
+        }
+
+        /* ---- AMBER BOOT GLOW ---- */
+        .boot-glow {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 800px;
+            height: 800px;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            pointer-events: none;
+            background: radial-gradient(circle, var(--crt-glow-str) 0%, var(--crt-glow) 40%, transparent 70%);
+            animation: boot-pulse 6s ease-in-out infinite;
+        }
+
+        @keyframes boot-pulse {
+            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            50%      { opacity: 1.0; transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        /* ---- GRID BACKGROUND ---- */
+        .grid-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(255, 179, 71, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 179, 71, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* ---- TOP STATUS BAR ---- */
+        .status-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 24px;
+            background: rgba(15, 17, 23, 0.92);
+            border-bottom: 1px solid var(--crt-line);
+            font-size: 0.7rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            backdrop-filter: blur(8px);
+        }
+
+        .status-bar .left span {
+            color: var(--crt-green);
+        }
+
+        .status-bar .left span::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: var(--crt-green);
+            border-radius: 50%;
+            margin-right: 8px;
+            vertical-align: middle;
+            animation: blink-led 1.2s step-end infinite;
+        }
+
+        @keyframes blink-led {
+            0%, 100% { opacity: 1; }
+            50%      { opacity: 0.2; }
+        }
+
+        .status-bar .right {
+            color: var(--crt-dim);
+            display: flex;
+            gap: 20px;
+        }
+
+        .status-bar .right .active {
+            color: var(--crt-amber);
+        }
+
+        /* ---- CONTAINER ---- */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 80px 28px 100px;
+        }
+
+        /* ---- HEADER / TERMINAL PROMPT ---- */
+        header {
+            padding: 60px 0 30px;
+            border-bottom: 1px solid var(--crt-line);
+            margin-bottom: 40px;
+        }
+
+        .cursor-blink {
+            display: inline-block;
+            width: 10px;
+            height: 1.2em;
+            background: var(--crt-amber);
+            margin-left: 4px;
+            vertical-align: text-bottom;
+            animation: blink-cursor 1s step-end infinite;
+        }
+
+        @keyframes blink-cursor {
+            0%, 100% { opacity: 1; }
+            50%      { opacity: 0; }
+        }
+
+        .prompt-line {
+            font-size: 0.85rem;
+            color: var(--crt-green-dim);
+            margin-bottom: 8px;
+        }
+
+        .prompt-line .amber {
+            color: var(--crt-amber);
+        }
+
+        .prompt-line .green {
+            color: var(--crt-green);
+        }
+
+        .typing-name {
+            font-size: 2.6rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--crt-amber);
+            text-shadow: 0 0 30px var(--crt-glow-str), 0 0 60px rgba(255, 179, 71, 0.08);
+            margin: 6px 0 0;
+        }
+
+        .typing-sub {
+            font-size: 0.95rem;
+            font-weight: 300;
+            color: var(--crt-dim);
+            margin-top: 6px;
+        }
+
+        .typing-sub .keyword {
+            color: var(--crt-green);
+        }
+
+        /* ---- PROMPT SYMBOL on section labels ---- */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .section-header .prompt-symbol {
+            color: var(--crt-amber-dim);
+            font-size: 0.8rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .section-header h2 {
+            font-size: 0.85rem;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--crt-amber-dim);
+        }
+
+        .section-header .line {
+            flex: 1;
+            height: 1px;
+            background: var(--crt-line);
+        }
+
+        /* ---- ABOUT ---- */
+        .about-text {
+            font-weight: 300;
+            font-size: 0.92rem;
+            color: var(--crt-text);
+            max-width: 640px;
+            line-height: 1.9;
+            padding-left: 20px;
+            border-left: 2px solid var(--crt-amber-dim);
+        }
+
+        .about-text .hl {
+            color: var(--crt-amber);
+        }
+
+        /* ---- PROJECT CARDS ---- */
+        .project-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .project-card {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--crt-line);
+            padding: 20px 24px;
+            transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+            cursor: default;
+        }
+
+        .project-card:hover {
+            border-color: var(--crt-amber-dim);
+            background: rgba(255, 179, 71, 0.03);
+            box-shadow: inset 2px 0 0 var(--crt-amber-dim);
+        }
+
+        .project-card .top-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .project-card h3 {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--crt-text);
+            letter-spacing: 0.01em;
+        }
+
+        .project-card .lang {
+            font-size: 0.7rem;
+            color: var(--crt-green-dim);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            border: 1px solid var(--crt-line);
+            padding: 2px 10px;
+        }
+
+        .project-card p {
+            font-size: 0.82rem;
+            font-weight: 300;
+            color: var(--crt-dim);
+            margin-top: 10px;
+            line-height: 1.7;
+        }
+
+        .project-card .repo-link {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 0.75rem;
+            color: var(--crt-amber);
+            text-decoration: none;
+            letter-spacing: 0.03em;
+            transition: color 0.2s;
+        }
+
+        .project-card .repo-link:hover {
+            color: var(--crt-text);
+            text-decoration: underline;
+        }
+
+        .project-card .repo-link::before {
+            content: '> ';
+            color: var(--crt-green-dim);
+        }
+
+        /* ---- SKILLS ---- */
+        .skills-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .skill-chip {
+            font-size: 0.82rem;
+            font-weight: 400;
+            color: var(--crt-dim);
+            border: 1px solid var(--crt-line);
+            padding: 8px 18px;
+            transition: all 0.2s;
+        }
+
+        .skill-chip:hover {
+            color: var(--crt-green);
+            border-color: var(--crt-green-dim);
+            background: rgba(159, 239, 159, 0.04);
+        }
+
+        /* ---- CONTACT ---- */
+        .contact-grid {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.82rem;
+            color: var(--crt-dim);
+            text-decoration: none;
+            padding: 6px 0;
+            border-bottom: 1px solid transparent;
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .contact-item:hover {
+            color: var(--crt-amber);
+            border-bottom-color: var(--crt-amber-dim);
+        }
+
+        .contact-item .tag {
+            font-size: 0.65rem;
+            color: var(--crt-green-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            min-width: 48px;
+        }
+
+        /* ---- FOOTER ---- */
+        footer {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid var(--crt-line);
+            text-align: center;
+            font-size: 0.7rem;
+            color: var(--crt-dim);
+            letter-spacing: 0.05em;
+        }
+
+        footer .cursor-blink-sm {
+            display: inline-block;
+            width: 6px;
+            height: 0.8em;
+            background: var(--crt-amber-dim);
+            margin-left: 4px;
+            vertical-align: middle;
+            animation: blink-cursor 1s step-end infinite;
+        }
+
+        /* ---- SCROLL REVEAL ---- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(18px);
+            transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ---- RESPONSIVE ---- */
+        @media (max-width: 600px) {
+            .container { padding: 60px 16px 80px; }
+            .typing-name { font-size: 1.6rem; }
+            .status-bar .right { display: none; }
+            .project-card { padding: 16px; }
+            .about-text { padding-left: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- CRT effects -->
+    <div class="crt-overlay"></div>
+    <div class="crt-vignette"></div>
+    <div class="boot-glow"></div>
+    <div class="grid-bg"></div>
+
+    <!-- Status bar -->
+    <div class="status-bar reveal">
+        <div class="left"><span>SYS OK</span> &nbsp; v2.0.1 &nbsp; /home/sean/portfolio</div>
+        <div class="right">
+            <span class="active">[about]</span>
+            <span>[projects]</span>
+            <span>[skills]</span>
+            <span>[contact]</span>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- ===== HEADER ===== -->
+        <header class="reveal">
+            <div class="prompt-line">
+                <span class="amber">sean@portfolio</span>:<span class="green">~</span>$ whoami
+            </div>
+            <h1 class="typing-name">Sean Dominic</h1>
+            <p class="typing-sub">
+                <span class="keyword">student</span> · developer · embedded tinkerer
+            </p>
+            <div class="cursor-blink"></div>
+        </header>
+
+        <!-- ===== ABOUT ===== -->
+        <section class="reveal">
+            <div class="section-header">
+                <span class="prompt-symbol">$</span>
+                <h2>About</h2>
+                <span class="line"></span>
+            </div>
+            <div class="about-text">
+                RTU student at the intersection of <span class="hl">embedded systems</span>,
+                game development, and clean software. I build things with
+                <span class="hl">Arduino</span>, <span class="hl">Python</span>,
+                and <span class="hl">PyGame</span> — from keypad login systems to
+                full-featured Tetris clones. I believe well-crafted code is its own reward.
+            </div>
+        </section>
+
+        <!-- ===== PROJECTS ===== -->
+        <section>
+            <div class="section-header reveal">
+                <span class="prompt-symbol">$</span>
+                <h2>Projects</h2>
+                <span class="line"></span>
+            </div>
+            <div class="project-list">
+                <div class="project-card reveal">
+                    <div class="top-row">
+                        <h3>Tetris Clone</h3>
+                        <span class="lang">Python / PyGame</span>
+                    </div>
+                    <p>
+                        Feature-complete Tetris with SRS wall kicks, ghost piece,
+                        hold mechanic, DAS auto-repeat, pause/game-over screens.
+                        <strong>77 tests, all passing.</strong>
+                    </p>
+                    <a class="repo-link" href="https://github.com/se4n-d0m1n1c/tetris-clone" target="_blank">github/se4n-d0m1n1c/tetris-clone</a>
+                </div>
+
+                <div class="project-card reveal">
+                    <div class="top-row">
+                        <h3>Snake Game</h3>
+                        <span class="lang">Python / PyGame</span>
+                    </div>
+                    <p>
+                        Classic Snake game built with PyGame. Simple, responsive
+                        controls with score tracking and collision detection.
+                    </p>
+                    <a class="repo-link" href="https://github.com/se4n-d0m1n1c/snake-game" target="_blank">github/se4n-d0m1n1c/snake-game</a>
+                </div>
+
+                <div class="project-card reveal">
+                    <div class="top-row">
+                        <h3>Downloads Organizer</h3>
+                        <span class="lang">Shell / Python</span>
+                    </div>
+                    <p>
+                        Automated system that tames cluttered Downloads folders.
+                        Configurable rules by file type, scheduled execution,
+                        clean logging.
+                    </p>
+                    <a class="repo-link" href="https://github.com/se4n-d0m1n1c/downloads-organizer" target="_blank">github/se4n-d0m1n1c/downloads-organizer</a>
+                </div>
+
+                <div class="project-card reveal">
+                    <div class="top-row">
+                        <h3>Relay Control (Exp6)</h3>
+                        <span class="lang">C++ / Arduino</span>
+                    </div>
+                    <p>
+                        4-channel relay module controlled by 4 push buttons with
+                        debouncing and toggle logic. Active-LOW signal for
+                        standard relay modules. Serial debugging at 9600 baud.
+                    </p>
+                    <a class="repo-link" href="https://github.com/se4n-d0m1n1c/exp6-relay-control" target="_blank">github/se4n-d0m1n1c/exp6-relay-control</a>
+                </div>
+
+                <div class="project-card reveal">
+                    <div class="top-row">
+                        <h3>Login System (Exp7)</h3>
+                        <span class="lang">C++ / Arduino</span>
+                    </div>
+                    <p>
+                        4x4 keypad authentication with EEPROM-backed credential
+                        storage, buzzer/LED feedback, and a 3-attempt lockout
+                        with 2-minute timer. Registration and login menus on a
+                        16x2 I2C LCD.
+                    </p>
+                    <a class="repo-link" href="https://github.com/se4n-d0m1n1c/exp7-login-system" target="_blank">github/se4n-d0m1n1c/exp7-login-system</a>
+                </div>
+
+                <div class="project-card reveal">
+                    <div class="top-row">
+                        <h3>Sonar Distance (Exp8)</h3>
+                        <span class="lang">C++ / Arduino</span>
+                    </div>
+                    <p>
+                        HC-SR04 ultrasonic distance measurement with 4-LED
+                        threshold indicators (GREEN >= 15cm, WHITE >= 30cm,
+                        BLUE >= 45cm, RED on error). Real-time display on
+                        16x2 I2C LCD.
+                    </p>
+                    <a class="repo-link" href="https://github.com/se4n-d0m1n1c/exp8-sonar-distance" target="_blank">github/se4n-d0m1n1c/exp8-sonar-distance</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SKILLS ===== -->
+        <section>
+            <div class="section-header reveal">
+                <span class="prompt-symbol">$</span>
+                <h2>Skills</h2>
+                <span class="line"></span>
+            </div>
+            <div class="skills-grid reveal">
+                <span class="skill-chip">Python</span>
+                <span class="skill-chip">PyGame</span>
+                <span class="skill-chip">Arduino</span>
+                <span class="skill-chip">C / C++</span>
+                <span class="skill-chip">Git / GitHub</span>
+                <span class="skill-chip">Embedded Systems</span>
+            </div>
+        </section>
+
+        <!-- ===== CONTACT ===== -->
+        <section>
+            <div class="section-header reveal">
+                <span class="prompt-symbol">$</span>
+                <h2>Contact</h2>
+                <span class="line"></span>
+            </div>
+            <div class="contact-grid reveal">
+                <a class="contact-item" href="mailto:seandominicfernandez@gmail.com">
+                    <span class="tag">email</span> seandominicfernandez@gmail.com
+                </a>
+                <a class="contact-item" href="https://github.com/se4n-d0m1n1c" target="_blank">
+                    <span class="tag">github</span> se4n-d0m1n1c
+                </a>
+            </div>
+        </section>
+
+        <!-- ===== FOOTER ===== -->
+        <footer class="reveal">
+            <span class="prompt-line" style="font-size:0.7rem; color:var(--crt-dim);">
+                <span style="color:var(--crt-amber-dim);">sean@portfolio</span>:<span style="color:var(--crt-green-dim);">~</span>$ <span style="color:var(--crt-amber-dim);">date</span>
+            </span>
+            <div style="margin-top: 6px;">
+                &copy; 2026 sean-d0m1n1c · built with intent
+                <span class="cursor-blink-sm"></span>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        // scroll reveal
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.12 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
