@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,9 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Share+Tech+Mono&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Share+Tech+Mono&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
     <style>
         /* =====================================================
            THEME: CRT TERMINAL / OSCILLOSCOPE
@@ -17,21 +20,25 @@
            ===================================================== */
 
         :root {
-            --crt-bg:       #0f1117;
-            --crt-bg2:      #13161e;
-            --crt-text:     #e2dcc0;
-            --crt-dim:      #7a7a6e;
-            --crt-amber:    #ffb347;
-            --crt-amber-dim:#cc8822;
-            --crt-green:    #9fef9f;
-            --crt-green-dim:#5a9e5a;
-            --crt-line:     #2a2d35;
+            --crt-bg: #0f1117;
+            --crt-bg2: #13161e;
+            --crt-text: #e2dcc0;
+            --crt-dim: #7a7a6e;
+            --crt-amber: #ffb347;
+            --crt-amber-dim: #cc8822;
+            --crt-green: #9fef9f;
+            --crt-green-dim: #5a9e5a;
+            --crt-line: #2a2d35;
             --crt-line-brt: #3d4048;
-            --crt-glow:     rgba(255, 179, 71, 0.08);
+            --crt-glow: rgba(255, 179, 71, 0.08);
             --crt-glow-str: rgba(255, 179, 71, 0.20);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: 'JetBrains Mono', 'Share Tech Mono', 'Space Mono', monospace;
@@ -48,13 +55,11 @@
             inset: 0;
             z-index: 9999;
             pointer-events: none;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(0,0,0,0.12) 0px,
-                rgba(0,0,0,0.12) 1px,
-                transparent 1px,
-                transparent 3px
-            );
+            background: repeating-linear-gradient(0deg,
+                    rgba(0, 0, 0, 0.12) 0px,
+                    rgba(0, 0, 0, 0.12) 1px,
+                    transparent 1px,
+                    transparent 3px);
         }
 
         /* ---- CRT VIGNETTE ---- */
@@ -63,11 +68,9 @@
             inset: 0;
             z-index: 9998;
             pointer-events: none;
-            background: radial-gradient(
-                ellipse at center,
-                transparent 50%,
-                rgba(0,0,0,0.55) 100%
-            );
+            background: radial-gradient(ellipse at center,
+                    transparent 50%,
+                    rgba(0, 0, 0, 0.55) 100%);
         }
 
         /* ---- AMBER BOOT GLOW ---- */
@@ -85,8 +88,17 @@
         }
 
         @keyframes boot-pulse {
-            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
-            50%      { opacity: 1.0; transform: translate(-50%, -50%) scale(1.2); }
+
+            0%,
+            100% {
+                opacity: 0.5;
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            50% {
+                opacity: 1.0;
+                transform: translate(-50%, -50%) scale(1.2);
+            }
         }
 
         /* ---- GRID BACKGROUND ---- */
@@ -137,8 +149,15 @@
         }
 
         @keyframes blink-led {
-            0%, 100% { opacity: 1; }
-            50%      { opacity: 0.2; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.2;
+            }
         }
 
         .status-bar .right {
@@ -178,8 +197,15 @@
         }
 
         @keyframes blink-cursor {
-            0%, 100% { opacity: 1; }
-            50%      { opacity: 0; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
         }
 
         .prompt-line {
@@ -414,7 +440,7 @@
             opacity: 0;
             transform: translateY(18px);
             transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-                        transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+                transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         .reveal.visible {
@@ -424,14 +450,29 @@
 
         /* ---- RESPONSIVE ---- */
         @media (max-width: 600px) {
-            .container { padding: 60px 16px 80px; }
-            .typing-name { font-size: 1.6rem; }
-            .status-bar .right { display: none; }
-            .project-card { padding: 16px; }
-            .about-text { padding-left: 12px; }
+            .container {
+                padding: 60px 16px 80px;
+            }
+
+            .typing-name {
+                font-size: 1.6rem;
+            }
+
+            .status-bar .right {
+                display: none;
+            }
+
+            .project-card {
+                padding: 16px;
+            }
+
+            .about-text {
+                padding-left: 12px;
+            }
         }
     </style>
 </head>
+
 <body>
     <!-- CRT effects -->
     <div class="crt-overlay"></div>
@@ -494,9 +535,11 @@
                         <span class="lang">Godot / WebAssembly</span>
                     </div>
                     <p>
-                        Browser-based physics stacking game where you balance falling animals into a tower. Built with Godot Engine and exported to WebAssembly. Controls: arrow keys to move/rotate, space to drop.
+                        Browser-based physics stacking game where you balance falling animals into a tower. Built with
+                        Godot Engine and exported to WebAssembly. Controls: arrow keys to move/rotate, space to drop.
                     </p>
-                    <a class="repo-link" href="https://github.com/se4n-d0m1n1c/anistack" target="_blank">github/se4n-d0m1n1c/anistack</a>
+                    <a class="repo-link" href="https://github.com/se4n-d0m1n1c/anistack"
+                        target="_blank">github/se4n-d0m1n1c/anistack</a>
                 </div>
 
                 <div class="project-card reveal">
@@ -509,7 +552,8 @@
                         hold mechanic, DAS auto-repeat, pause/game-over screens.
                         <strong>77 tests, all passing.</strong>
                     </p>
-                    <a class="repo-link" href="https://github.com/se4n-d0m1n1c/tetris-clone" target="_blank">github/se4n-d0m1n1c/tetris-clone</a>
+                    <a class="repo-link" href="https://github.com/se4n-d0m1n1c/tetris-clone"
+                        target="_blank">github/se4n-d0m1n1c/tetris-clone</a>
                 </div>
 
                 <div class="project-card reveal">
@@ -521,7 +565,8 @@
                         Classic Snake game built with PyGame. Simple, responsive
                         controls with score tracking and collision detection.
                     </p>
-                    <a class="repo-link" href="https://github.com/se4n-d0m1n1c/snake-game" target="_blank">github/se4n-d0m1n1c/snake-game</a>
+                    <a class="repo-link" href="https://github.com/se4n-d0m1n1c/snake-game"
+                        target="_blank">github/se4n-d0m1n1c/snake-game</a>
                 </div>
 
                 <div class="project-card reveal">
@@ -534,7 +579,8 @@
                         Configurable rules by file type, scheduled execution,
                         clean logging.
                     </p>
-                    <a class="repo-link" href="https://github.com/se4n-d0m1n1c/downloads-organizer" target="_blank">github/se4n-d0m1n1c/downloads-organizer</a>
+                    <a class="repo-link" href="https://github.com/se4n-d0m1n1c/downloads-organizer"
+                        target="_blank">github/se4n-d0m1n1c/downloads-organizer</a>
                 </div>
 
                 <div class="project-card reveal">
@@ -547,7 +593,8 @@
                         debouncing and toggle logic. Active-LOW signal for
                         standard relay modules. Serial debugging at 9600 baud.
                     </p>
-                    <a class="repo-link" href="https://github.com/se4n-d0m1n1c/exp6-relay-control" target="_blank">github/se4n-d0m1n1c/exp6-relay-control</a>
+                    <a class="repo-link" href="https://github.com/se4n-d0m1n1c/exp6-relay-control"
+                        target="_blank">github/se4n-d0m1n1c/exp6-relay-control</a>
                 </div>
 
                 <div class="project-card reveal">
@@ -561,7 +608,8 @@
                         with 2-minute timer. Registration and login menus on a
                         16x2 I2C LCD.
                     </p>
-                    <a class="repo-link" href="https://github.com/se4n-d0m1n1c/exp7-login-system" target="_blank">github/se4n-d0m1n1c/exp7-login-system</a>
+                    <a class="repo-link" href="https://github.com/se4n-d0m1n1c/exp7-login-system"
+                        target="_blank">github/se4n-d0m1n1c/exp7-login-system</a>
                 </div>
 
                 <div class="project-card reveal">
@@ -575,7 +623,8 @@
                         BLUE >= 45cm, RED on error). Real-time display on
                         16x2 I2C LCD.
                     </p>
-                    <a class="repo-link" href="https://github.com/se4n-d0m1n1c/exp8-sonar-distance" target="_blank">github/se4n-d0m1n1c/exp8-sonar-distance</a>
+                    <a class="repo-link" href="https://github.com/se4n-d0m1n1c/exp8-sonar-distance"
+                        target="_blank">github/se4n-d0m1n1c/exp8-sonar-distance</a>
                 </div>
             </div>
         </section>
@@ -594,6 +643,7 @@
                 <span class="skill-chip">C / C++</span>
                 <span class="skill-chip">Git / GitHub</span>
                 <span class="skill-chip">Embedded Systems</span>
+                <span class="skill-chip">Godot</span>
             </div>
         </section>
         <br>
@@ -617,7 +667,8 @@
         <!-- ===== FOOTER ===== -->
         <footer class="reveal">
             <span class="prompt-line" style="font-size:0.7rem; color:var(--crt-dim);">
-                <span style="color:var(--crt-amber-dim);">sean@portfolio</span>:<span style="color:var(--crt-green-dim);">~</span>$ <span style="color:var(--crt-amber-dim);">date</span>
+                <span style="color:var(--crt-amber-dim);">sean@portfolio</span>:<span
+                    style="color:var(--crt-green-dim);">~</span>$ <span style="color:var(--crt-amber-dim);">date</span>
             </span>
             <div style="margin-top: 6px;">
                 &copy; 2026 sean-d0m1n1c · built with intent
@@ -635,4 +686,5 @@
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     </script>
 </body>
+
 </html>
