@@ -281,8 +281,162 @@
             transform: translateY(0);
         }
 
+        /* ---- TILT CARD EFFECT ---- */
+        .tilt-card {
+            transform-style: preserve-3d;
+            transform: perspective(1000px);
+        }
+
+        .tilt-card-inner {
+            transform: rotateX(0deg) rotateY(0deg);
+            transition: transform 0.3s ease-out;
+        }
+
+        .tilt-card:hover .tilt-card-inner {
+            box-shadow: 
+                -10px 10px 30px rgba(255, 179, 71, 0.1),
+                10px -10px 30px rgba(159, 239, 159, 0.05);
+        }
+
+        /* ---- SKILL CHIP PULSE ---- */
+        @keyframes skill-pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(159, 239, 159, 0.2);
+            }
+            50% {
+                box-shadow: 0 0 0 8px rgba(159, 239, 159, 0);
+            }
+        }
+
+        .skill-chip:hover {
+            animation: skill-pulse 1.5s ease-in-out infinite;
+        }
+
+        /* ---- TYPING CURSOR ---- */
+        .typing-text::after {
+            content: '▋';
+            color: var(--crt-amber);
+            animation: blink-cursor 1s step-end infinite;
+            margin-left: 2px;
+        }
+
+        /* ---- GLITCH EFFECT ON HOVER ---- */
+        .glitch-hover:hover {
+            animation: glitch-anim 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+        }
+
+        @keyframes glitch-anim {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        /* ---- FLOATING BADGE ---- */
+        @keyframes float-badge {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .badge-terminal {
+            animation: float-badge 3s ease-in-out infinite;
+        }
+
+        /* ---- PARALLAX GRID ---- */
+        .grid-bg {
+            animation: grid-scroll 20s linear infinite;
+        }
+
+        @keyframes grid-scroll {
+            0% { background-position: 0 0; }
+            100% { background-position: 60px 60px; }
+        }
+
+        /* ---- ENHANCED CARD GLOW ---- */
+        .card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 179, 71, 0.03) 50%,
+                transparent 70%
+            );
+            transform: rotate(45deg);
+            transition: all 0.6s;
+            opacity: 0;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+            animation: shine-sweep 1.5s ease-in-out;
+        }
+
+        @keyframes shine-sweep {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        /* ---- PROJECT ICON PLACEHOLDER ---- */
+        .project-icon {
+            width: 48px;
+            height: 48px;
+            border: 2px solid var(--crt-line);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--crt-amber-dim);
+            transition: all 0.3s;
+        }
+
+        .card:hover .project-icon {
+            border-color: var(--crt-amber);
+            color: var(--crt-amber);
+            box-shadow: 0 0 20px rgba(255, 179, 71, 0.3);
+        }
+
+        /* ---- SECTION HIGHLIGHT ---- */
+        section:focus-within {
+            background: rgba(255, 179, 71, 0.02);
+            border-radius: 8px;
+            padding: 20px;
+            margin: -20px;
+        }
+
+        /* ---- RESPONSIVE IMPROVEMENTS ---- */
         @media (max-width: 768px) {
             .navbar-brand { font-size: 0.65rem; }
+            .display-4 { font-size: 2rem !important; }
+            .card { min-height: 280px; }
+        }
+
+        /* ---- SMOOTH SCROLL ---- */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* ---- SCROLL PROGRESS BAR ---- */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--crt-amber), var(--crt-green));
+            z-index: 10000;
+            width: 0%;
+            transition: width 0.1s;
         }
     </style>
 </head>
@@ -293,6 +447,9 @@
     <div class="crt-vignette"></div>
     <div class="boot-glow"></div>
     <div class="grid-bg"></div>
+    
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress" id="scrollProgress"></div>
 
     <!-- Bootstrap Navbar -->
     <nav class="navbar navbar-expand-md sticky-top reveal">
@@ -355,98 +512,128 @@
             <div class="row g-4">
                 <!-- Anistack -->
                 <div class="col-12 col-md-6 reveal">
-                    <div class="card h-100 p-4">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h3 class="card-title mb-0">Anistack</h3>
-                            <span class="badge-terminal">Godot / WASM</span>
-                        </div>
-                        <p class="card-text mb-4">
-                            Browser-based physics stacking game where you balance falling animals into a tower. Built with
-                            Godot Engine and exported to WebAssembly.
-                        </p>
-                        <div class="mt-auto">
-                            <a class="repo-link" href="https://github.com/se4n-d0m1n1c/anistack" target="_blank">github/anistack</a>
+                    <div class="card h-100 p-4 tilt-card">
+                        <div class="tilt-card-inner">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="project-icon">🎮</div>
+                                    <h3 class="card-title mb-0 glitch-hover">Anistack</h3>
+                                </div>
+                                <span class="badge-terminal">Godot / WASM</span>
+                            </div>
+                            <p class="card-text mb-4">
+                                Browser-based physics stacking game where you balance falling animals into a tower. Built with
+                                Godot Engine and exported to WebAssembly.
+                            </p>
+                            <div class="mt-auto">
+                                <a class="repo-link" href="https://github.com/se4n-d0m1n1c/anistack" target="_blank">github/anistack</a>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Tetris Clone -->
                 <div class="col-12 col-md-6 reveal">
-                    <div class="card h-100 p-4">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h3 class="card-title mb-0">Tetris Clone</h3>
-                            <span class="badge-terminal">Python / PyGame</span>
-                        </div>
-                        <p class="card-text mb-4">
-                            Feature-complete Tetris with SRS wall kicks, ghost piece, and hold mechanic.
-                            <strong>77 tests, all passing.</strong>
-                        </p>
-                        <div class="mt-auto">
-                            <a class="repo-link" href="https://github.com/se4n-d0m1n1c/tetris-clone" target="_blank">github/tetris-clone</a>
+                    <div class="card h-100 p-4 tilt-card">
+                        <div class="tilt-card-inner">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="project-icon">🧱</div>
+                                    <h3 class="card-title mb-0 glitch-hover">Tetris Clone</h3>
+                                </div>
+                                <span class="badge-terminal">Python / PyGame</span>
+                            </div>
+                            <p class="card-text mb-4">
+                                Feature-complete Tetris with SRS wall kicks, ghost piece, and hold mechanic.
+                                <strong>77 tests, all passing.</strong>
+                            </p>
+                            <div class="mt-auto">
+                                <a class="repo-link" href="https://github.com/se4n-d0m1n1c/tetris-clone" target="_blank">github/tetris-clone</a>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Snake Game -->
                 <div class="col-12 col-md-6 reveal">
-                    <div class="card h-100 p-4">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h3 class="card-title mb-0">Snake Game</h3>
-                            <span class="badge-terminal">Python / PyGame</span>
-                        </div>
-                        <p class="card-text mb-4">
-                            Classic Snake game built with PyGame. Simple, responsive controls with score tracking.
-                        </p>
-                        <div class="mt-auto">
-                            <a class="repo-link" href="https://github.com/se4n-d0m1n1c/snake-game" target="_blank">github/snake-game</a>
+                    <div class="card h-100 p-4 tilt-card">
+                        <div class="tilt-card-inner">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="project-icon">🐍</div>
+                                    <h3 class="card-title mb-0 glitch-hover">Snake Game</h3>
+                                </div>
+                                <span class="badge-terminal">Python / PyGame</span>
+                            </div>
+                            <p class="card-text mb-4">
+                                Classic Snake game built with PyGame. Simple, responsive controls with score tracking.
+                            </p>
+                            <div class="mt-auto">
+                                <a class="repo-link" href="https://github.com/se4n-d0m1n1c/snake-game" target="_blank">github/snake-game</a>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Downloads Organizer -->
                 <div class="col-12 col-md-6 reveal">
-                    <div class="card h-100 p-4">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h3 class="card-title mb-0">Downloads Org</h3>
-                            <span class="badge-terminal">Shell / Python</span>
-                        </div>
-                        <p class="card-text mb-4">
-                            Automated system that tames cluttered Downloads folders. Configurable rules by file type.
-                        </p>
-                        <div class="mt-auto">
-                            <a class="repo-link" href="https://github.com/se4n-d0m1n1c/downloads-organizer" target="_blank">github/downloads-org</a>
+                    <div class="card h-100 p-4 tilt-card">
+                        <div class="tilt-card-inner">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="project-icon">📁</div>
+                                    <h3 class="card-title mb-0 glitch-hover">Downloads Org</h3>
+                                </div>
+                                <span class="badge-terminal">Shell / Python</span>
+                            </div>
+                            <p class="card-text mb-4">
+                                Automated system that tames cluttered Downloads folders. Configurable rules by file type.
+                            </p>
+                            <div class="mt-auto">
+                                <a class="repo-link" href="https://github.com/se4n-d0m1n1c/downloads-organizer" target="_blank">github/downloads-org</a>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Login System -->
                 <div class="col-12 col-md-6 reveal">
-                    <div class="card h-100 p-4">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h3 class="card-title mb-0">Exp7: Login</h3>
-                            <span class="badge-terminal">C++ / Arduino</span>
-                        </div>
-                        <p class="card-text mb-4">
-                            4x4 keypad authentication with EEPROM-backed storage and 16x2 I2C LCD display.
-                        </p>
-                        <div class="mt-auto">
-                            <a class="repo-link" href="https://github.com/se4n-d0m1n1c/exp7-login-system" target="_blank">github/exp7-login</a>
+                    <div class="card h-100 p-4 tilt-card">
+                        <div class="tilt-card-inner">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="project-icon">🔐</div>
+                                    <h3 class="card-title mb-0 glitch-hover">Exp7: Login</h3>
+                                </div>
+                                <span class="badge-terminal">C++ / Arduino</span>
+                            </div>
+                            <p class="card-text mb-4">
+                                4x4 keypad authentication with EEPROM-backed storage and 16x2 I2C LCD display.
+                            </p>
+                            <div class="mt-auto">
+                                <a class="repo-link" href="https://github.com/se4n-d0m1n1c/exp7-login-system" target="_blank">github/exp7-login</a>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Sonar Distance -->
                 <div class="col-12 col-md-6 reveal">
-                    <div class="card h-100 p-4">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h3 class="card-title mb-0">Exp8: Sonar</h3>
-                            <span class="badge-terminal">C++ / Arduino</span>
-                        </div>
-                        <p class="card-text mb-4">
-                            Ultrasonic distance measurement with 4-LED threshold indicators and LCD feedback.
-                        </p>
-                        <div class="mt-auto">
-                            <a class="repo-link" href="https://github.com/se4n-d0m1n1c/exp8-sonar-distance" target="_blank">github/exp8-sonar</a>
+                    <div class="card h-100 p-4 tilt-card">
+                        <div class="tilt-card-inner">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="project-icon">📡</div>
+                                    <h3 class="card-title mb-0 glitch-hover">Exp8: Sonar</h3>
+                                </div>
+                                <span class="badge-terminal">C++ / Arduino</span>
+                            </div>
+                            <p class="card-text mb-4">
+                                Ultrasonic distance measurement with 4-LED threshold indicators and LCD feedback.
+                            </p>
+                            <div class="mt-auto">
+                                <a class="repo-link" href="https://github.com/se4n-d0m1n1c/exp8-sonar-distance" target="_blank">github/exp8-sonar</a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -515,6 +702,37 @@
             entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
         }, { threshold: 0.12 });
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // scroll progress bar
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('scrollProgress').style.width = scrolled + '%';
+        });
+
+        // tilt effect for cards
+        document.querySelectorAll('.tilt-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = ((y - centerY) / centerY) * -8;
+                const rotateY = ((x - centerX) / centerX) * 8;
+                
+                const inner = card.querySelector('.tilt-card-inner');
+                inner.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                const inner = card.querySelector('.tilt-card-inner');
+                inner.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+            });
+        });
     </script>
 </body>
 
